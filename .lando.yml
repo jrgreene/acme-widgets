@@ -1,0 +1,5 @@
+name: acme-sales-system
+services:
+  appserver:
+    type: php
+    via: cli

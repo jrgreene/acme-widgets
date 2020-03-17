@@ -1,0 +1,30 @@
+{
+  "name": "acme-widgets/sales-system",
+  "description": "Shopping basket system.",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Jonathan R Greene",
+      "email": "me@jonathanrgreene.com"
+    }
+  ],
+  "require": {
+    "php": "^7.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Acme\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AcmeTest\\": "test/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --testsuite Acme"
+  }
+}
