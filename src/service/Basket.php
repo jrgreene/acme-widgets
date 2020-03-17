@@ -5,6 +5,7 @@ namespace Acme\Service;
 use Acme\Offer\Offer;
 use Acme\Product\Product;
 use Acme\Rule\Rule;
+use Exception;
 
 class Basket
 {
@@ -16,6 +17,9 @@ class Basket
 
     /** @var Offer[] */
     private $offers;
+
+    /** @var Product[] */
+    private $items = [];
 
     /**
      * Basket constructor.
@@ -32,8 +36,13 @@ class Basket
 
     public function addProduct(Product $product): Basket
     {
-        $this->products[] = $product;
+        $this->products[$product->getCode()] = $product;
         return $this;
+    }
+
+    public function getProductByCode(string $code): ?Product
+    {
+        return $this->products[$code] ?? null;
     }
 
     /**
@@ -113,6 +122,27 @@ class Basket
         foreach ($offers as $offer) {
             $this->addOffer($offer);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Product[]
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+    public function add(string $productCode): Basket
+    {
+        $product = $this->getProductByCode($productCode);
+
+        if (null === $product) {
+            throw new Exception(sprintf('Product with code %s not in product catalogue.', $productCode));
+        }
+
+        $this->items[] = $product;
 
         return $this;
     }

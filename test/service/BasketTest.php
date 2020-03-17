@@ -19,8 +19,23 @@ class BasketTest extends TestCase
 
     public function testInitializationWithProducts(): void
     {
-        $product1 = $this->createMock(Product::class);
-        $product2 = $this->createMock(Product::class);
+        $product1 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('RedWidget')
+                         ->setMethods(['getCode'])
+                         ->getMock();
+
+        $product1->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('R01'));
+
+        $product2 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('GreenWidget')
+                         ->setMethods(['getCode'])
+                         ->getMock();
+
+        $product2->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('G01'));
 
         $products = [
             $product1,
@@ -33,8 +48,8 @@ class BasketTest extends TestCase
 
         $this->assertIsArray($returnedProducts);
         $this->assertCount(2, $returnedProducts);
-        $this->assertEquals($product1, $returnedProducts[0]);
-        $this->assertEquals($product1, $returnedProducts[1]);
+        $this->assertEquals($product1, $returnedProducts['R01']);
+        $this->assertEquals($product2, $returnedProducts['G01']);
     }
 
     public function testInitializationWithRules(): void
@@ -75,5 +90,40 @@ class BasketTest extends TestCase
         $this->assertCount(2, $returnedRules);
         $this->assertEquals($offer1, $returnedRules[0]);
         $this->assertEquals($offer2, $returnedRules[1]);
+    }
+
+    public function testAdd(): void
+    {
+        $product1 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('RedWidget')
+                         ->setMethods(['getCode'])
+                         ->getMock();
+
+        $product1->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('R01'));
+
+        $products = [
+            $product1,
+        ];
+
+        $basket = new Basket($products);
+
+        $basket->add('R01');
+
+        $returnedItems = $basket->getItems();
+
+        $this->assertIsArray($returnedItems);
+        $this->assertCount(1, $returnedItems);
+        $this->assertEquals($product1, $returnedItems[0]);
+    }
+
+    public function testAddBadProduct(): void
+    {
+        $this->expectExceptionMessage('Product with code R01 not in product catalogue.');
+
+        $basket = new Basket();
+
+        $basket->add('R01');
     }
 }
