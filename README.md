@@ -1,8 +1,8 @@
 # Acme Widget Co Sales System
 
-This is a proof of concept for the new Acme widget sales system. It includes support for a basket, 
-delivery charge rules, and offers. It is designed to be easily expandable to allow additional rules
-and offers to be added.
+This is a proof of concept for the new Acme widget sales system. It includes support for a basket 
+with delivery charge rules and offers. It is designed to be easily expandable to allow rules
+and offers to be added as needed.
 
 ## Setup with Lando
 
@@ -28,3 +28,11 @@ To set up unit tests, first copy the phpunit.xml.dist file and rename it as phpu
 Next, run unit tests with the following command:
 
 ``composer test``
+
+## Adding products, rules, and offers
+
+By default, this project contains only the implementation for the Basket class. It has been tested, however, with
+various mocked products, rules, and offers to ensure that it is functioning as expected.
+
+To add actual products, rules, and offers for production use, simply implement their respective interfaces and
+inject them into the Basket class.
