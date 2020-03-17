@@ -146,4 +146,30 @@ class Basket
 
         return $this;
     }
+
+    public function total(): float
+    {
+        $items = $this->getItems();
+        $total = 0;
+
+        foreach ($this->getItems() as $item) {
+            $total += $item->getPrice();
+        }
+
+        foreach ($this->getOffers() as $offer) {
+            $total -= $offer->getDiscount($items);
+        }
+
+        $deliveryCost = 0;
+
+        foreach ($this->getRules() as $rule) {
+            $cost = $rule->getDeliveryCost($total);
+
+            if ($cost && ($cost > $deliveryCost)) {
+                $deliveryCost = $cost;
+            }
+        }
+
+        return floor(($total + $deliveryCost) * 100) / 100;
+    }
 }

@@ -21,7 +21,7 @@ class BasketTest extends TestCase
     {
         $product1 = $this->getMockBuilder(Product::class)
                          ->setMockClassName('RedWidget')
-                         ->setMethods(['getCode'])
+                         ->setMethods(['getCode', 'getPrice'])
                          ->getMock();
 
         $product1->expects($this->any())
@@ -30,7 +30,7 @@ class BasketTest extends TestCase
 
         $product2 = $this->getMockBuilder(Product::class)
                          ->setMockClassName('GreenWidget')
-                         ->setMethods(['getCode'])
+                         ->setMethods(['getCode', 'getPrice'])
                          ->getMock();
 
         $product2->expects($this->any())
@@ -125,5 +125,336 @@ class BasketTest extends TestCase
         $basket = new Basket();
 
         $basket->add('R01');
+    }
+
+    public function testTotals1(): void
+    {
+        $product1 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('GreenWidget')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMock();
+
+        $product1->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('G01'));
+
+        $product1->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(24.95));
+
+        $product2 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('BlueWidget')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMock();
+
+        $product2->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('B01'));
+
+        $product2->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(7.95));
+
+        $products = [
+            $product1,
+            $product2,
+        ];
+
+        $rule1 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under50')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule1->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(4.95));
+
+        $rule2 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule2->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(2.95));
+
+        $rule3 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('AtOrOver90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule3->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(null));
+
+        $rules = [
+            $rule1,
+            $rule2,
+            $rule3,
+        ];
+
+        $offer1 = $this->getMockBuilder(Offer::class)
+                       ->setMockClassName('Buy1RedWidgetSecondHalfPrice')
+                       ->setMethods(['getDiscount'])
+                       ->getMock();
+
+        $offer1->expects($this->any())
+               ->method('getDiscount')
+               ->will($this->returnValue('0'));
+
+        $offers = [
+            $offer1,
+        ];
+
+        $basket = new Basket($products, $rules, $offers);
+
+        $basket->add('B01')->add('G01');
+
+        $this->assertEquals(37.85, $basket->total());
+    }
+
+    public function testTotals2(): void
+    {
+        $product1 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('RedWidget2')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMockForAbstractClass();
+
+        $product1->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('R01'));
+
+        $product1->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(32.95));
+
+        $products = [
+            $product1,
+        ];
+
+        $rule1 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under50')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule1->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(4.95));
+
+        $rule2 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule2->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(2.95));
+
+        $rule3 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('AtOrOver90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule3->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(0));
+
+        $rules = [
+            $rule1,
+            $rule2,
+            $rule3,
+        ];
+
+        $offer1 = $this->getMockBuilder(Offer::class)
+                       ->setMockClassName('Buy1RedWidgetSecondHalfPrice')
+                       ->setMethods(['getDiscount'])
+                       ->getMock();
+
+        $offer1->expects($this->any())
+               ->method('getDiscount')
+               ->will($this->returnValue(16.475));
+
+        $offers = [
+            $offer1,
+        ];
+
+        $basket = new Basket($products, $rules, $offers);
+
+        $basket->add('R01')->add('R01');
+
+        $this->assertEquals(54.37, $basket->total());
+    }
+
+    public function testTotals3(): void
+    {
+
+        $product1 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('RedWidget2')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMockForAbstractClass();
+
+        $product1->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('R01'));
+
+        $product1->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(32.95));
+
+        $product2 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('GreenWidget')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMock();
+
+        $product2->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('G01'));
+
+        $product2->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(24.95));
+
+        $products = [
+            $product1,
+            $product2,
+        ];
+
+        $rule1 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under50')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule1->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(null));
+
+        $rule2 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule2->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(2.95));
+
+        $rule3 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('AtOrOver90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule3->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(null));
+
+        $rules = [
+            $rule1,
+            $rule2,
+            $rule3,
+        ];
+
+        $offer1 = $this->getMockBuilder(Offer::class)
+                       ->setMockClassName('Buy1RedWidgetSecondHalfPrice')
+                       ->setMethods(['getDiscount'])
+                       ->getMock();
+
+        $offer1->expects($this->any())
+               ->method('getDiscount')
+               ->will($this->returnValue(0));
+
+        $offers = [
+            $offer1,
+        ];
+
+        $basket = new Basket($products, $rules, $offers);
+
+        $basket->add('R01')->add('G01');
+
+        $this->assertEquals('60.85', $basket->total());
+    }
+
+    public function testTotals4(): void
+    {
+        $product1 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('RedWidget2')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMockForAbstractClass();
+
+        $product1->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('R01'));
+
+        $product1->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(32.95));
+
+        $product2 = $this->getMockBuilder(Product::class)
+                         ->setMockClassName('BlueWidget')
+                         ->setMethods(['getCode', 'getPrice'])
+                         ->getMock();
+
+        $product2->expects($this->any())
+                 ->method('getCode')
+                 ->will($this->returnValue('B01'));
+
+        $product2->expects($this->any())
+                 ->method('getPrice')
+                 ->will($this->returnValue(7.95));
+
+        $products = [
+            $product1,
+            $product2,
+        ];
+
+        $rule1 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under50')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule1->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(null));
+
+        $rule2 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('Under90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule2->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(null));
+
+        $rule3 = $this->getMockBuilder(Rule::class)
+                      ->setMockClassName('AtOrOver90')
+                      ->setMethods(['getDeliveryCost'])
+                      ->getMock();
+
+        $rule3->expects($this->any())
+              ->method('getDeliveryCost')
+              ->will($this->returnValue(0));
+
+        $rules = [
+            $rule1,
+            $rule2,
+            $rule3,
+        ];
+
+        $offer1 = $this->getMockBuilder(Offer::class)
+                       ->setMockClassName('Buy1RedWidgetSecondHalfPrice')
+                       ->setMethods(['getDiscount'])
+                       ->getMock();
+
+        $offer1->expects($this->any())
+               ->method('getDiscount')
+               ->will($this->returnValue(16.475));
+
+        $offers = [
+            $offer1,
+        ];
+
+        $basket = new Basket($products, $rules, $offers);
+
+        $basket->add('B01')->add('B01')->add('R01')->add('R01')->add('R01');
+
+        $this->assertEquals('98.27', $basket->total());
     }
 }
