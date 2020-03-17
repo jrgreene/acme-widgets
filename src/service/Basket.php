@@ -147,19 +147,30 @@ class Basket
         return $this;
     }
 
-    public function total(): float
+    private function getGrossTotal(): float
     {
-        $items = $this->getItems();
-        $total = 0;
+        $grossTotal = 0;
 
         foreach ($this->getItems() as $item) {
-            $total += $item->getPrice();
+            $grossTotal += $item->getPrice();
         }
+
+        return $grossTotal;
+    }
+
+    private function getTotalDiscount()
+    {
+        $totalDiscount = 0;
 
         foreach ($this->getOffers() as $offer) {
-            $total -= $offer->getDiscount($items);
+            $totalDiscount -= $offer->getDiscount($this->getItems());
         }
 
+        return $totalDiscount;
+    }
+
+    private function totalDeliveryCost($total): float
+    {
         $deliveryCost = 0;
 
         foreach ($this->getRules() as $rule) {
@@ -170,6 +181,17 @@ class Basket
             }
         }
 
-        return floor(($total + $deliveryCost) * 100) / 100;
+        return $deliveryCost;
+    }
+
+    public function total(): float
+    {
+        $grossTotal    = $this->getGrossTotal();
+        $totalDiscount = $this->getTotalDiscount();
+        $subTotal      = $grossTotal - $totalDiscount;
+        $deliveryCost  = $this->totalDeliveryCost($subTotal);
+        $total         = $subTotal + $deliveryCost;
+
+        return floor($total * 100) / 100;
     }
 }
