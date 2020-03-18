@@ -163,7 +163,7 @@ class Basket
         $totalDiscount = 0;
 
         foreach ($this->getOffers() as $offer) {
-            $totalDiscount -= $offer->getDiscount($this->getItems());
+            $totalDiscount += $offer->getDiscount($this->getItems());
         }
 
         return $totalDiscount;

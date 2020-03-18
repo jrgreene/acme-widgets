@@ -369,7 +369,7 @@ class BasketTest extends TestCase
 
         $basket->add('R01')->add('G01');
 
-        $this->assertEquals('60.85', $basket->total());
+        $this->assertEquals(60.85, $basket->total());
     }
 
     public function testTotals4(): void
@@ -455,6 +455,6 @@ class BasketTest extends TestCase
 
         $basket->add('B01')->add('B01')->add('R01')->add('R01')->add('R01');
 
-        $this->assertEquals('98.27', $basket->total());
+        $this->assertEquals(98.27, $basket->total());
     }
 }
